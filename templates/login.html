@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录 · 淮海集团内部平台</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-card__header">
+            <img src="{% static 'logo.jpg' %}" alt="Huaihai Group Logo">
+            <h2>欢迎登录</h2>
+        </div>
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+            <div class="form-field">
+                <label for="username">用户名</label>
+                <input id="username" type="text" name="username" required autofocus autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+            </div>
+            <div class="form-field">
+                <label for="password">密码</label>
+                <input id="password" type="password" name="password" required autocomplete="new-password">
+            </div>
+            <button type="submit" class="primary-button">登录</button>
+        </form>
+        {% if messages %}
+            <ul class="message-list">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>
