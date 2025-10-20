@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ form_title|default:form.instance.pk|yesno:"编辑任务,新建任务" }}{% endblock %}
+
+{% block content %}
+<h1>{{ form_title|default:form.instance.pk|yesno:"编辑任务,新建任务" }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {% if next_url %}
+        <input type="hidden" name="next" value="{{ next_url }}">
+    {% endif %}
+    {% if form.non_field_errors %}
+        <div class="form-errors">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="form-grid">
+        <div class="form-field">
+            {{ form.project.label_tag }}
+            {% if fixed_project %}
+                <div class="form-field__static">
+                    {% if fixed_project.code %}
+                        {{ fixed_project.code }} · {{ fixed_project.name }}
+                    {% else %}
+                        {{ fixed_project.name }}
+                    {% endif %}
+                </div>
+                {{ form.project }}
+            {% else %}
+                {{ form.project }}
+            {% endif %}
+            {% if form.project.errors %}
+                <div class="form-field__error">{{ form.project.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div class="form-field__error">{{ form.title.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.status.label_tag }}
+            {{ form.status }}
+            {% if form.status.errors %}
+                <div class="form-field__error">{{ form.status.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.priority.label_tag }}
+            {{ form.priority }}
+            {% if form.priority.errors %}
+                <div class="form-field__error">{{ form.priority.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.assignee.label_tag }}
+            {{ form.assignee }}
+            {% if form.assignee.errors %}
+                <div class="form-field__error">{{ form.assignee.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.due_date.label_tag }}
+            {{ form.due_date }}
+            {% if form.due_date.errors %}
+                <div class="form-field__error">{{ form.due_date.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field form-field--full">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="form-field__error">{{ form.description.errors.0 }}</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="primary-button">保存任务</button>
+        <a class="header__button" href="{{ cancel_url|default:next_url|default:task_list_url }}">取消</a>
+    </div>
+</form>
+{% endblock %}

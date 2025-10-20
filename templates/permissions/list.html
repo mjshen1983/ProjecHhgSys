@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}权限配置 · 淮海集团项目管理平台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>权限组管理</h1>
+    {% if can_manage_permissions %}
+    <a class="header__button header__button--primary" href="{% url 'permission_group_create' %}">新建权限组</a>
+    {% endif %}
+</div>
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>名称</th>
+                <th>代码</th>
+                <th>项目管理</th>
+                <th>任务管理</th>
+                <th>用户管理</th>
+                <th>权限配置</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for group in groups %}
+            <tr>
+                <td>{{ group.name }}</td>
+                <td>{{ group.code }}</td>
+                <td>{{ group.can_manage_projects|yesno:"是,否" }}</td>
+                <td>{{ group.can_manage_tasks|yesno:"是,否" }}</td>
+                <td>{{ group.can_manage_users|yesno:"是,否" }}</td>
+                <td>{{ group.can_manage_permissions|yesno:"是,否" }}</td>
+                <td>
+                    <div class="action-group">
+                        <a class="header__button" href="{% url 'permission_group_update' group.id %}">编辑</a>
+                        {% if group.code not in protected_codes %}
+                        <form action="{% url 'permission_group_delete' group.id %}" method="post" class="inline-form">
+                            {% csrf_token %}
+                            <button class="header__button header__button--danger" type="submit" onclick="return confirm('确认删除该权限组吗？');">删除</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7">暂无权限组数据。</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

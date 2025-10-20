@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ form.instance.pk|yesno:"编辑项目,新建项目" }}{% endblock %}
+
+{% block content %}
+<h1>{{ form.instance.pk|yesno:"编辑项目,新建项目" }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div class="form-errors">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="form-grid">
+        <div class="form-field">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="form-field__error">{{ form.name.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.code.label_tag }}
+            {{ form.code }}
+            {% if form.code.errors %}
+                <div class="form-field__error">{{ form.code.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.lead_department.label_tag }}
+            {{ form.lead_department }}
+            {% if form.lead_department.errors %}
+                <div class="form-field__error">{{ form.lead_department.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.status.label_tag }}
+            {{ form.status }}
+            {% if form.status.errors %}
+                <div class="form-field__error">{{ form.status.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.owner.label_tag }}
+            {{ form.owner }}
+            {% if form.owner.errors %}
+                <div class="form-field__error">{{ form.owner.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.start_date.label_tag }}
+            {{ form.start_date }}
+            {% if form.start_date.errors %}
+                <div class="form-field__error">{{ form.start_date.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.end_date.label_tag }}
+            {{ form.end_date }}
+            {% if form.end_date.errors %}
+                <div class="form-field__error">{{ form.end_date.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field form-field--full">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="form-field__error">{{ form.description.errors.0 }}</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="primary-button">保存项目</button>
+        <a class="header__button" href="{% url 'project_list' %}">取消</a>
+    </div>
+</form>
+{% endblock %}

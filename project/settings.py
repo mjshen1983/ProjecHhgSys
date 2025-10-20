@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -15,6 +16,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
+    'projects',
+    'tasks',
+    'attachments',
 ]
 
 MIDDLEWARE = [
@@ -47,19 +51,38 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'DataGenList',
-        'USER': 'jm01820',
-        'PASSWORD': 'Qwerty!qaz2wsx',
-        'HOST': '112.124.111.239',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+# DATABASES 配置替换为基于环境变量
+db_url = os.environ.get('DATA_DB_URL')
+if db_url:
+    parsed = urlparse(db_url)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': parsed.path.lstrip('/'),
+            'USER': parsed.username,
+            'PASSWORD': parsed.password,
+            'HOST': parsed.hostname,
+            'PORT': parsed.port or '',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DATA_DB_NAME', 'DataGenList'),
+            'USER': os.environ.get('DATA_DB_USER', 'jm01820'),
+            'PASSWORD': os.environ.get('DATA_DB_PASSWORD', 'Qwerty!qaz2wsx'),
+            'HOST': os.environ.get('DATA_DB_HOST', '112.124.111.239'),
+            'PORT': os.environ.get('DATA_DB_PORT', '3306'),
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
+# End of DATABASES configuration
 
 AUTH_PASSWORD_VALIDATORS = []
 
@@ -71,6 +94,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # 默认使用PyMySQL驱动，兼容Windows环境部署
 import pymysql

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ form_title|default:"权限组表单" }} · 淮海集团项目管理平台{% endblock %}
+
+{% block content %}
+<h1>{{ form_title|default:"权限组信息" }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    {% if form.non_field_errors %}
+    <div class="form-errors">
+        {% for error in form.non_field_errors %}
+        <div>{{ error }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="form-grid">
+        {% for field in form.visible_fields %}
+        <div class="form-field{% if field.field.widget.attrs.rows %} form-field--full{% endif %}">
+            {% if field.field.widget.input_type == 'checkbox' %}
+            <div class="form-checkbox">
+                {{ field }}
+                {{ field.label_tag }}
+            </div>
+            {% else %}
+                {{ field.label_tag }}
+                {{ field }}
+            {% endif %}
+            {% if field.errors %}
+            <div class="form-field__error">{{ field.errors.0 }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="primary-button">保存</button>
+        <a class="header__button" href="{% url 'permission_group_list' %}">取消</a>
+    </div>
+</form>
+{% endblock %}

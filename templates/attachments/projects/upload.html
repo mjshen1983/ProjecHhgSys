@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}上传项目文件{% endblock %}
+
+{% block content %}
+<h1>上传项目附件</h1>
+<p>项目：{{ project.name }}（{{ project.code }}）</p>
+{% if messages %}
+    <ul class="message-list">
+    {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+<form method="post" enctype="multipart/form-data" class="upload-form">
+    {% csrf_token %}
+    <div class="form-grid" style="max-width: 520px;">
+        <div class="form-field form-field--full">
+            <label for="name">附件名称</label>
+            <input type="text" name="name" id="name" required placeholder="如：项目需求文档 v1.0" value="{{ name_value }}">
+        </div>
+        <div class="form-field form-field--full">
+            <label for="file">选择文件</label>
+            <input type="file" name="file" id="file" required>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="primary-button">上传附件</button>
+        <a class="header__button" href="{% url 'attachment_project_list' project.id %}">返回附件列表</a>
+    </div>
+</form>
+{% endblock %}

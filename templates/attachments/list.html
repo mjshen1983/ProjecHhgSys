@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}附件列表{% endblock %}
+
+{% block content %}
+<div class="list-toolbar">
+    <h1>所有附件</h1>
+</div>
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>附件名称</th>
+                <th>所属项目</th>
+                <th>上传者</th>
+                <th>上传时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for attachment in attachments %}
+            <tr>
+                <td>{{ attachment.id }}</td>
+                <td>
+                    <div>{{ attachment.name }}</div>
+                    <div class="secondary-text">{{ attachment.file_basename }}{% if attachment.file_extension %}（{{ attachment.file_extension|upper }}）{% endif %}</div>
+                </td>
+                <td>
+                    {% if attachment.project %}
+                        {{ attachment.project.name }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>{{ attachment.uploaded_by.display_name|default:attachment.uploaded_by.username }}</td>
+                <td>{{ attachment.created_at|date:"Y-m-d H:i" }}</td>
+                <td>
+                    <a class="header__button header__button--primary" href="{{ attachment.file.url }}" download>下载</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6">暂无附件。</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

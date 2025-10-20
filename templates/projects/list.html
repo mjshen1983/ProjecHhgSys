@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}项目列表{% endblock %}
+
+{% block content %}
+<div class="list-toolbar">
+    <h1>项目列表</h1>
+    <div class="action-group">
+        <a class="header__button" href="{% url 'main' %}">返回主页</a>
+        {% if can_manage_projects %}
+        <a class="header__button header__button--primary" href="{% url 'project_create' %}">新建项目</a>
+        {% else %}
+        <button type="button" class="header__button header__button--primary header__button--disabled" disabled>新建项目</button>
+        {% endif %}
+    </div>
+</div>
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>项目编码</th>
+                <th>项目名称</th>
+                <th>负责人</th>
+                <th>牵头部门</th>
+                <th>状态</th>
+                <th>项目文件</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.id }}</td>
+                <td>{{ project.code }}</td>
+                <td>{{ project.name }}</td>
+                <td>{{ project.owner.display_name|default:project.owner.username }}</td>
+                <td>{{ project.lead_department|default:"--" }}</td>
+                <td><span class="status-badge {{ project.status_css }}">{{ project.status_label }}</span></td>
+                <td><a class="header__button" href="{% url 'attachment_project_list' project.id %}">查看附件</a></td>
+                <td>
+                    <div class="action-group">
+                        <a class="header__button" href="{% url 'project_detail' project.id %}">查看</a>
+                        {% if can_manage_projects %}
+                        <a class="header__button" href="{% url 'project_update' project.id %}">修改</a>
+                        <form action="{% url 'project_delete' project.id %}" method="post" class="inline-form" onsubmit="return confirm('确定删除该项目？');">
+                            {% csrf_token %}
+                            <button type="submit" class="header__button header__button--danger">删除</button>
+                        </form>
+                        {% else %}
+                        <span class="header__button header__button--disabled" aria-disabled="true">修改</span>
+                        <span class="header__button header__button--disabled" aria-disabled="true">删除</span>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="8">暂无项目，点击右上角按钮开始新建。</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}任务详情{% endblock %}
+
+{% block content %}
+<h1>{{ task.title }}</h1>
+<div class="detail-grid">
+	<div>
+		<div class="detail-label">所属项目</div>
+		<div class="detail-value">{{ task.project.name }}</div>
+	</div>
+	<div>
+		<div class="detail-label">负责人</div>
+		<div class="detail-value">
+			{% if task.assignee %}
+				{{ task.assignee.display_name|default:task.assignee.username }}
+			{% else %}
+				--
+			{% endif %}
+		</div>
+	</div>
+	<div>
+		<div class="detail-label">任务状态</div>
+		<div class="detail-value">{{ task.status_label }}</div>
+	</div>
+	<div>
+		<div class="detail-label">优先级</div>
+		<div class="detail-value">{{ task.priority_label }}</div>
+	</div>
+	<div>
+		<div class="detail-label">截止日期</div>
+		<div class="detail-value">{{ task.due_date|date:"Y-m-d"|default:"--" }}</div>
+	</div>
+	<div>
+		<div class="detail-label">创建时间</div>
+		<div class="detail-value">{{ task.created_at|date:"Y-m-d H:i" }}</div>
+	</div>
+</div>
+<section class="detail-section">
+	<h2>任务说明</h2>
+	<p>{{ task.description|default:"暂无描述" }}</p>
+</section>
+<div class="form-actions">
+	<a class="header__button" href="{{ return_url }}">返回</a>
+</div>
+{% endblock %}

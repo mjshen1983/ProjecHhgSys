@@ -4,29 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}淮海集团内部平台{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <title>{% block title %}淮海集团项目管理平台{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=20251017">
 </head>
 <body>
     <header class="header">
         <div class="header__brand">
             <img src="{% static 'logo.jpg' %}" alt="Huaihai Group Logo">
-            <span>淮海集团内部平台</span>
+            <span>淮海集团项目管理平台</span>
         </div>
         <div class="header__actions">
             {% if display_name %}
                 <span>{{ display_name }}</span>
             {% endif %}
-            <a href="{% url 'change_password' %}">修改密码</a>
-            <a href="{% url 'logout' %}">登出</a>
+            <a class="header__button header__button--primary" href="{% url 'change_password' %}">修改密码</a>
+            <a class="header__button header__button--danger" href="{% url 'logout' %}">登出</a>
         </div>
     </header>
     <main class="layout">
         <aside class="layout__sidebar">
             <div class="section-title">快捷入口</div>
-            <div class="placeholder">未来功能模块可在此处添加。</div>
+            <div class="quick-links">
+                <a class="quick-link" href="{% url 'main' %}">
+                    <span class="quick-link__icon">[H]</span>
+                    <span class="quick-link__label">主页</span>
+                </a>
+                {% if can_manage_projects %}
+                <a class="quick-link" href="{% url 'project_create' %}">
+                    <span class="quick-link__icon">[P]</span>
+                    <span class="quick-link__label">快建项目</span>
+                </a>
+                {% else %}
+                <span class="quick-link quick-link--disabled" aria-disabled="true">
+                    <span class="quick-link__icon">[P]</span>
+                    <span class="quick-link__label">快建项目</span>
+                </span>
+                {% endif %}
+                {% if can_manage_tasks %}
+                <a class="quick-link" href="{% url 'task_create' %}">
+                    <span class="quick-link__icon">[T]</span>
+                    <span class="quick-link__label">快建任务</span>
+                </a>
+                {% else %}
+                <span class="quick-link quick-link--disabled" aria-disabled="true">
+                    <span class="quick-link__icon">[T]</span>
+                    <span class="quick-link__label">快建任务</span>
+                </span>
+                {% endif %}
+                {% if can_manage_users %}
+                <a class="quick-link" href="{% url 'user_list' %}">
+                    <span class="quick-link__icon">[U]</span>
+                    <span class="quick-link__label">用户管理</span>
+                </a>
+                {% endif %}
+                {% if can_manage_permissions %}
+                <a class="quick-link" href="{% url 'permission_group_list' %}">
+                    <span class="quick-link__icon">[R]</span>
+                    <span class="quick-link__label">权限配置</span>
+                </a>
+                {% endif %}
+            </div>
         </aside>
         <section class="layout__content">
+            {% if messages %}
+            <ul class="message-list">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             {% block content %}{% endblock %}
         </section>
     </main>

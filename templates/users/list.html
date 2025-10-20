@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}用户管理 · 淮海集团项目管理平台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>用户管理</h1>
+    {% if can_manage_users %}
+    <a class="header__button header__button--primary" href="{% url 'user_create' %}">新建用户</a>
+    {% endif %}
+</div>
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>用户名</th>
+                <th>显示名称</th>
+                <th>部门</th>
+                <th>权限组</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in users %}
+            {% with user=item.user profile=item.profile %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.display_name|default:user.username }}</td>
+                <td>{% if item.department %}{{ item.department.name }}{% else %}--{% endif %}</td>
+                <td>{% if item.permission_group %}{{ item.permission_group.name }}{% else %}未设置{% endif %}</td>
+                <td>
+                    {% if profile %}
+                        {% if profile.is_active %}启用{% else %}停用{% endif %}
+                    {% else %}
+                        未建立档案
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-group">
+                        <a class="header__button" href="{% url 'user_update' user.id %}">编辑</a>
+                        {% if profile and can_manage_users %}
+                        <form action="{% url 'user_delete' user.id %}" method="post" class="inline-form">
+                            {% csrf_token %}
+                            <button class="header__button header__button--danger" type="submit" onclick="return confirm('确认删除该用户吗？');">删除</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endwith %}
+        {% empty %}
+            <tr>
+                <td colspan="6">暂无用户数据。</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

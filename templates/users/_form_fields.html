@@ -1,0 +1,18 @@
+{% if form.non_field_errors %}
+<div class="form-errors">
+    {% for error in form.non_field_errors %}
+    <div>{{ error }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="form-grid">
+    {% for field in form %}
+        <div class="form-field{% if field.field.widget.attrs.get('rows') %} form-field--full{% endif %}">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+            <div class="form-field__error">{{ field.errors.0 }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
