@@ -98,6 +98,16 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# 默认使用PyMySQL驱动，兼容Windows环境部署
-import pymysql
-pymysql.install_as_MySQLdb()
+# Prefer the C driver (mysqlclient) when available. Fall back to PyMySQL only if
+# mysqlclient isn't installed. This avoids PyMySQL from masking mysqlclient when
+# both are present (which causes Django to see the wrong DB API version).
+try:
+    # If mysqlclient is installed it provides the MySQLdb module
+    import MySQLdb  # noqa: F401
+except Exception:
+    try:
+        import pymysql
+        pymysql.install_as_MySQLdb()
+    except Exception:
+        # If neither driver is present, let Django raise the appropriate error
+        pass
