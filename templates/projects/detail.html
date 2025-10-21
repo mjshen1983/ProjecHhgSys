@@ -31,10 +31,10 @@
 	<p>{{ project.description|default:"暂无描述" }}</p>
 </section>
 <section class="detail-section">
-	<div class="list-toolbar">
-		<h2>任务列表</h2>
-		<a class="primary-button" href="{{ create_task_url }}">新建任务</a>
-	</div>
+		<div class="list-toolbar">
+			<h2>任务列表</h2>
+			<a class="header__button header__button--primary" href="{{ create_task_url }}">新建任务</a>
+		</div>
 	{% if tasks %}
 	<div class="table-card">
 		<table>

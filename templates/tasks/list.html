@@ -7,10 +7,10 @@
     <h1>任务看板</h1>
     <div class="action-group">
         <a class="header__button" href="{% url 'project_list' %}">返回项目列表</a>
-        {% if can_manage_tasks %}
-        <a class="primary-button" href="{% url 'task_create' %}?next={{ task_list_url|urlencode }}">新建任务</a>
-        {% else %}
-        <button type="button" class="primary-button primary-button--disabled" disabled>新建任务</button>
+    {% if can_manage_tasks %}
+    <a class="header__button header__button--primary" href="{% url 'task_create' %}?next={{ task_list_url|urlencode }}">新建任务</a>
+    {% else %}
+    <button type="button" class="header__button header__button--primary header__button--disabled" disabled>新建任务</button>
         {% endif %}
     </div>
 </div>
