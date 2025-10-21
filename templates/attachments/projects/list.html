@@ -7,7 +7,11 @@
     <h1>{{ project.name }} 附件</h1>
     <div class="action-group">
         <a class="header__button" href="{% url 'project_list' %}">返回项目列表</a>
-        <a class="primary-button" href="{% url 'attachment_project_upload' project.id %}">上传附件</a>
+    {% if can_manage_projects %}
+    <a class="header__button header__button--primary" href="{% url 'attachment_project_upload' project.id %}">上传</a>
+    {% else %}
+    <button type="button" class="header__button header__button--primary header__button--disabled" disabled aria-disabled="true">上传</button>
+    {% endif %}
     </div>
 </div>
 {% if messages %}
@@ -41,10 +45,14 @@
                 <td>
                     <div class="action-group">
                         <a class="header__button header__button--primary" href="{{ attachment.file.url }}" download>下载</a>
+                        {% if can_manage_projects %}
                         <form class="inline-form" action="{% url 'attachment_project_delete' project.id attachment.id %}" method="post" onsubmit="return confirm('确定删除该附件？');">
                             {% csrf_token %}
                             <button type="submit" class="header__button header__button--danger">删除</button>
                         </form>
+                        {% else %}
+                        <button type="button" class="header__button header__button--danger header__button--disabled" disabled aria-disabled="true">删除</button>
+                        {% endif %}
                     </div>
                 </td>
             </tr>
