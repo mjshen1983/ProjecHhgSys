@@ -11,6 +11,7 @@ from .models import AppUser, PermissionGroup, UserProfile
 from .utils import build_base_context
 from projects.models import Project
 from tasks.models import Task
+from typing import Dict
 
 
 PROTECTED_PERMISSION_CODES = {'admin', 'dept_manager', 'member'}
@@ -20,7 +21,7 @@ def _format_percent(value: float) -> str:
     return f"{value:.1f}".rstrip('0').rstrip('.')
 
 
-def _build_status_stats(counts: dict[str, int], labels: dict[str, str]):
+def _build_status_stats(counts: Dict[str, int], labels: Dict[str, str]):
     total = sum(counts.values())
     if total == 0:
         return [], 0
