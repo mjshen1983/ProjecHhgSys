@@ -1,2 +1,5 @@
 Django==3.2.20
-PyMySQL==1.1.1
+PyMySQL==0.10.1
+
+# Optional: uncomment and install if you prefer the C driver (requires system dev headers)
+# mysqlclient==1.4.6
