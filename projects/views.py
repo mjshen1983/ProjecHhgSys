@@ -9,7 +9,7 @@ from .forms import ProjectForm
 from app.models import AppUser
 from app.utils import build_base_context
 from tasks.models import Task
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Count, Q
 from attachments.models import Attachment
 
 
@@ -30,7 +30,10 @@ def project_list(request):
     attachment_qs = Attachment.objects.filter(project=OuterRef('pk'))
     projects = (
         Project.objects.select_related('owner')
-        .annotate(has_attachments=Exists(attachment_qs))
+        .annotate(
+            has_attachments=Exists(attachment_qs),
+            open_tasks=Count('task', filter=~Q(task__status='done'))
+        )
         .order_by('-updated_at')
     )
     context = {**session_ctx, 'projects': projects}
@@ -89,9 +92,21 @@ def project_update(request, pk):
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
-            form.save()
-            messages.success(request, '项目已更新')
-            return redirect('project_list')
+            # Prevent marking project as completed if it still has unfinished tasks
+            new_status = form.cleaned_data.get('status')
+            if new_status == 'completed':
+                unfinished_exists = Task.objects.filter(project=project).exclude(status='done').exists()
+                if unfinished_exists:
+                    form.add_error('status', '项目下还有未完成的任务，无法转为“已完成”')
+                    # fall through to render form with error
+                else:
+                    form.save()
+                    messages.success(request, '项目已更新')
+                    return redirect('project_list')
+            else:
+                form.save()
+                messages.success(request, '项目已更新')
+                return redirect('project_list')
     else:
         form = ProjectForm(instance=project)
     context = {**session_ctx, 'form': form}

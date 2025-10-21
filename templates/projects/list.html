@@ -24,6 +24,7 @@
                 <th>负责人</th>
                 <th>牵头部门</th>
                 <th>状态</th>
+                <th>未完成任务</th>
                 <th>项目文件</th>
                 <th>操作</th>
             </tr>
@@ -37,6 +38,9 @@
                 <td>{{ project.owner.display_name|default:project.owner.username }}</td>
                 <td>{{ project.lead_department|default:"--" }}</td>
                 <td><span class="status-badge {{ project.status_css }}">{{ project.status_label }}</span></td>
+                <td>
+                    <a class="header__button" href="{% url 'task_list' %}?project={{ project.id }}&amp;status=not_done">{{ project.open_tasks }}</a>
+                </td>
                 <td>
                     {% if project.has_attachments %}
                         <a class="header__button" href="{% url 'attachment_project_list' project.id %}">查看</a>

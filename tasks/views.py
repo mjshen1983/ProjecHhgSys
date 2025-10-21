@@ -25,7 +25,15 @@ def task_list(request):
     session_ctx, redirect_response = _require_login(request)
     if redirect_response:
         return redirect_response
-    tasks = Task.objects.select_related('project', 'assignee').order_by('-updated_at')
+    tasks_qs = Task.objects.select_related('project', 'assignee').all()
+    # Optional filters from querystring
+    project_id = request.GET.get('project')
+    status = request.GET.get('status')
+    if project_id:
+        tasks_qs = tasks_qs.filter(project_id=project_id)
+    if status == 'not_done':
+        tasks_qs = tasks_qs.exclude(status='done')
+    tasks = tasks_qs.order_by('-updated_at')
     context = {
         **session_ctx,
         'tasks': tasks,
