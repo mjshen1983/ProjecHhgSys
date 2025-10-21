@@ -9,6 +9,8 @@ from .forms import ProjectForm
 from app.models import AppUser
 from app.utils import build_base_context
 from tasks.models import Task
+from django.db.models import Exists, OuterRef
+from attachments.models import Attachment
 
 
 def _require_login(request):
@@ -24,7 +26,13 @@ def project_list(request):
     session_ctx, redirect_response = _require_login(request)
     if redirect_response:
         return redirect_response
-    projects = Project.objects.select_related('owner').order_by('-updated_at')
+    # Annotate each project with a boolean indicating whether it has attachments.
+    attachment_qs = Attachment.objects.filter(project=OuterRef('pk'))
+    projects = (
+        Project.objects.select_related('owner')
+        .annotate(has_attachments=Exists(attachment_qs))
+        .order_by('-updated_at')
+    )
     context = {**session_ctx, 'projects': projects}
     return render(request, 'projects/list.html', context)
 
