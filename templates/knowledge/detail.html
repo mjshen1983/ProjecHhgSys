@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ item.title }}{% endblock %}
+
+{% block content %}
+<div class="detail-section">
+    <h1>{{ item.title }}</h1>
+    <div>作者：{{ item.owner.display_name|default:item.owner.username }}</div>
+    <div>可见性：{{ item.get_visibility_display }}</div>
+    <div class="detail-body">{{ item.body|linebreaks }}</div>
+    <div class="attachment-list">
+        {% for att in item.attachments.all %}
+            <a class="header__button header__button--primary" href="{{ att.file.url }}" download>{{ att.filename|default:att.file.name }}</a>
+        {% endfor %}
+    </div>
+    <div class="form-actions">
+        <a class="header__button" href="{% url 'knowledge_list' %}">返回列表</a>
+    </div>
+</div>
+{% endblock %}

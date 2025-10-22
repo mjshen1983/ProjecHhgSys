@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}知识库{% endblock %}
+
+{% block content %}
+<div class="list-toolbar">
+    <h1>知识库</h1>
+    <div class="action-group">
+        <a class="header__button" href="{% url 'main' %}">返回主页</a>
+    <a class="header__button header__button--primary" href="{% url 'knowledge_create' %}">新建知识</a>
+    </div>
+</div>
+
+<div class="table-card">
+    <form method="get" class="list-search" style="display:flex;gap:8px;align-items:center;">
+        <input type="text" name="q" placeholder="搜索标题或正文或标签" value="{{ request.GET.q }}" class="search-input" />
+        <button type="submit" class="header__button header__button--primary">搜索</button>
+    </form>
+    <table>
+        <thead>
+            <tr><th>ID</th><th>标题</th><th>所有者</th><th>所属部门</th><th>可见性</th><th>更新时间</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td><a href="{% url 'knowledge_detail' item.id %}">{{ item.title }}</a></td>
+                <td>{{ item.owner.display_name|default:item.owner.username }}</td>
+                <td>{{ item.department_name|default:'-' }}</td>
+                <td>{{ item.get_visibility_display }}</td>
+                <td>{{ item.updated_at|date:'Y-m-d H:i' }}</td>
+                <td>
+                    {# download control: if exactly one attachment, show direct download; if multiple, link to detail attachments #}
+                    {% if item.attachments_count == 1 %}
+                        {% with att=item.attachments.all.0 %}
+                            <a class="header__button header__button--primary" href="{{ att.file.url }}" download>下载</a>
+                        {% endwith %}
+                    {% elif item.attachments_count > 1 %}
+                        <a class="header__button header__button--primary" href="{% url 'knowledge_detail' item.id %}#attachments">下载</a>
+                    {% endif %}
+
+                    {% if item.owner_id == user_id %}
+                        <form method="post" action="{% url 'knowledge_delete' item.id %}" style="display:inline;margin-left:6px;" onsubmit="return confirm('确认删除此条目吗？');">
+                            {% csrf_token %}
+                            <button type="submit" class="header__button">删除</button>
+                        </form>
+                    {% endif %}
+                    {% if not item.attachments_count and item.owner_id != user_id %}
+                        —
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6">暂无条目。</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

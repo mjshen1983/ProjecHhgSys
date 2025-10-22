@@ -9,4 +9,5 @@ urlpatterns = [
     path('projects/', include('projects.urls')),
     path('tasks/', include('tasks.urls')),
     path('attachments/', include('attachments.urls')),
+    path('knowledge/', include('knowledge.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+
+{% block title %}{{ form.instance.pk|yesno:"编辑条目,新建条目" }}{% endblock %}
+
+{% block content %}
+<h1>{{ form.instance.pk|yesno:"编辑条目,新建条目" }}</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div class="form-errors">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="form-grid">
+        <div class="form-field">
+            {{ form.title.label_tag }}
+            {{ form.title|add_class:'input-text' }}
+            {% if form.title.errors %}
+                <div class="form-field__error">{{ form.title.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field form-field--full">
+            {{ form.body.label_tag }}
+            {{ form.body|add_class:'input-textarea' }}
+            {% if form.body.errors %}
+                <div class="form-field__error">{{ form.body.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.visibility.label_tag }}
+            {{ form.visibility }}
+            {% if form.visibility.errors %}
+                <div class="form-field__error">{{ form.visibility.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            {{ form.tags.label_tag }}
+            {{ form.tags|add_class:'input-text' }}
+            {% if form.tags.errors %}
+                <div class="form-field__error">{{ form.tags.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-field">
+            <label>附件</label>
+            <input type="file" name="attachments" multiple />
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="primary-button">保存条目</button>
+    <a class="header__button" href="{% url 'knowledge_list' %}">返回上级菜单</a>
+    </div>
+</form>
+{% endblock %}

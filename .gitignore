@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+ENV/
+.env
+
+# Django
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+media/
+media/*
+staticfiles/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor backups
+*~
+*.swp
+*.tmp
+*.temp
+
+# PyCharm
+*.iml
+
+# Logs
+logs/
+*.log
+
+# Other
+coverage/
+htmlcov/
+.env*
+
+# Node
+node_modules/
+
+# Jetbrains
+.idea/
+
+# Ignore build artifacts
+dist/
+build/
+
+# Ignore personal secrets
+secrets.json
