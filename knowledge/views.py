@@ -24,10 +24,14 @@ def _require_login(request):
 
 def visible_items_for_user(user_id):
     q = Q(visibility=KnowledgeItem.VISIBILITY_PUBLIC)
+    # read department from UserProfile (projects.Department FK)
+    profile = UserProfile.objects.select_related('department').filter(user_id=user_id).first()
+    user_dept_name = None
+    if profile and profile.department:
+        user_dept_name = profile.department.name
+    if user_dept_name:
+        q |= Q(visibility=KnowledgeItem.VISIBILITY_DEPT, department=user_dept_name)
     user = AppUser.objects.filter(pk=user_id).first()
-    user_dept = getattr(user, 'department', None) if user else None
-    if user_dept:
-        q |= Q(visibility=KnowledgeItem.VISIBILITY_DEPT, department=user_dept)
     if user:
         q |= Q(visibility=KnowledgeItem.VISIBILITY_PRIVATE, owner=user)
     return KnowledgeItem.objects.filter(q)
@@ -61,9 +65,11 @@ def view_item(request, pk):
         messages.error(request, '无权查看此条目')
         return redirect('knowledge_list')
     if item.visibility == KnowledgeItem.VISIBILITY_DEPT:
-        user = AppUser.objects.filter(pk=session_ctx['user_id']).first()
-        user_dept = getattr(user, 'department', None)
-        if user_dept != item.department and item.owner_id != session_ctx['user_id']:
+        profile = UserProfile.objects.select_related('department').filter(user_id=session_ctx['user_id']).first()
+        user_dept_name = None
+        if profile and profile.department:
+            user_dept_name = profile.department.name
+        if user_dept_name != item.department and item.owner_id != session_ctx['user_id']:
             messages.error(request, '无权查看此条目')
             return redirect('knowledge_list')
     context = {**session_ctx, 'item': item}
@@ -81,8 +87,9 @@ def create_item(request):
             item.owner_id = session_ctx['user_id']
             # if department not set, try user's department
             if not item.department:
-                user = AppUser.objects.filter(pk=session_ctx['user_id']).first()
-                item.department = getattr(user, 'department', None)
+                profile = UserProfile.objects.select_related('department').filter(user_id=session_ctx['user_id']).first()
+                if profile and profile.department:
+                    item.department = profile.department.name
             item.save()
             # handle attachments
             files = request.FILES.getlist('attachments')
