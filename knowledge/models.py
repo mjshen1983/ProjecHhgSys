@@ -1,4 +1,5 @@
 from django.db import models
+from pathlib import Path
 from django.conf import settings
 from django.utils import timezone
 
@@ -38,6 +39,18 @@ class KnowledgeAttachment(models.Model):
     file = models.FileField(upload_to='knowledge/%Y/%m/%d/')
     filename = models.CharField(max_length=255, blank=True)
     uploaded_at = models.DateTimeField(default=timezone.now)
+
+    @property
+    def file_basename(self) -> str:
+        if not self.file:
+            return ''
+        return Path(self.file.name).name
+
+    @property
+    def file_extension(self) -> str:
+        if not self.file:
+            return ''
+        return Path(self.file.name).suffix.lstrip('.')
 
     class Meta:
         db_table = 'knowledge_attachments'

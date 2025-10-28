@@ -10,7 +10,9 @@
     <div class="detail-body">{{ item.body|linebreaks }}</div>
     <div class="attachment-list">
         {% for att in item.attachments.all %}
-            <a class="header__button header__button--primary" href="{{ att.file.url }}" download>{{ att.filename|default:att.file.name }}</a>
+            <div class="attachment-item">
+                {% include 'attachments/_preview.html' with attachment=att %}
+            </div>
         {% endfor %}
     </div>
     <div class="form-actions">

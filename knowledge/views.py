@@ -11,6 +11,11 @@ from app.utils import build_base_context
 from django.conf import settings
 from app.models import AppUser
 from django.views.decorators.http import require_POST
+from django.views.decorators.clickjacking import xframe_options_exempt
+import os
+from django.http import FileResponse, Http404
+from attachments.models import Attachment as GenericAttachment
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 
 def _require_login(request):
@@ -55,6 +60,7 @@ def list_items(request):
     return render(request, 'knowledge/list.html', context)
 
 
+@xframe_options_exempt
 def view_item(request, pk):
     session_ctx, redirect_response = _require_login(request)
     if redirect_response:
@@ -102,6 +108,41 @@ def create_item(request):
         form = KnowledgeItemForm()
     context = {**session_ctx, 'form': form}
     return render(request, 'knowledge/form.html', context)
+
+
+@xframe_options_exempt
+def attachment_serve(request, pk, aid):
+    """Serve a specific KnowledgeAttachment file while allowing embedding in iframe.
+    pk: KnowledgeItem id, aid: KnowledgeAttachment id
+    Performs similar permission checks as view_item before serving the file.
+    """
+    session_ctx, redirect_response = _require_login(request)
+    if redirect_response:
+        return redirect_response
+    item = get_object_or_404(KnowledgeItem, pk=pk)
+    # permission checks (reuse logic from view_item)
+    if item.visibility == KnowledgeItem.VISIBILITY_PRIVATE and item.owner_id != session_ctx['user_id']:
+        messages.error(request, '无权查看此附件')
+        return redirect('knowledge_list')
+    if item.visibility == KnowledgeItem.VISIBILITY_DEPT:
+        profile = UserProfile.objects.select_related('department').filter(user_id=session_ctx['user_id']).first()
+        user_dept_name = None
+        if profile and profile.department:
+            user_dept_name = profile.department.name
+        if user_dept_name != item.department and item.owner_id != session_ctx['user_id']:
+            messages.error(request, '无权查看此附件')
+            return redirect('knowledge_list')
+    # fetch attachment
+    attachment = get_object_or_404(KnowledgeAttachment, pk=aid, item=item)
+    # ensure file exists
+    try:
+        fpath = attachment.file.path
+    except Exception:
+        raise Http404('File not found')
+    if not os.path.exists(fpath):
+        raise Http404('File not found')
+    response = FileResponse(open(fpath, 'rb'), as_attachment=False, filename=attachment.filename or os.path.basename(fpath))
+    return response
 
 
 @require_POST

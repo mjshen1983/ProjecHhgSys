@@ -52,38 +52,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-# DATABASES 配置替换为基于环境变量
-db_url = os.environ.get('DATA_DB_URL')
-if db_url:
-    parsed = urlparse(db_url)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': parsed.path.lstrip('/'),
-            'USER': parsed.username,
-            'PASSWORD': parsed.password,
-            'HOST': parsed.hostname,
-            'PORT': parsed.port or '',
-            'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            },
-        }
+# DATABASES 配置（已硬编码为项目默认，优先级高于环境变量）
+# 已根据需求将数据库连接信息写入 settings.py。注意：这是永久设置，
+# 如果你以后想用环境变量或不同环境（dev/prod），请恢复到基于环境变量的实现。
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'HHG_APP_DB',
+        'USER': 'systemid',
+        'PASSWORD': 'Qwerty!qaz2wsx',
+        'HOST': '192.168.6.71',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.environ.get('DATA_DB_NAME', 'DataGenList'),
-            'USER': os.environ.get('DATA_DB_USER', 'jm01820'),
-            'PASSWORD': os.environ.get('DATA_DB_PASSWORD', 'Qwerty!qaz2wsx'),
-            'HOST': os.environ.get('DATA_DB_HOST', '112.124.111.239'),
-            'PORT': os.environ.get('DATA_DB_PORT', '3306'),
-            'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            },
-        }
-    }
-# End of DATABASES configuration
+}
+
+# End of DATABASES configuration (hardcoded)
 
 AUTH_PASSWORD_VALIDATORS = []
 

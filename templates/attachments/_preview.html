@@ -1,0 +1,9 @@
+{# Partial: render an inline preview for known types (PDF) or fall back to download link #}
+{% if attachment.file_extension|lower == 'pdf' %}
+  <div class="attachment-preview">
+    <iframe src="{% url 'knowledge_attachment_serve' attachment.item.id attachment.id %}" width="100%" height="600" frameborder="0"></iframe>
+    <div><a href="{{ attachment.file.url }}" download>下载 PDF</a></div>
+  </div>
+{% else %}
+  <a class="header__button header__button--primary" href="{{ attachment.file.url }}" download>{{ attachment.filename|default:attachment.file.name }}</a>
+{% endif %}

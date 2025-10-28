@@ -4,9 +4,16 @@ __pycache__/
 *$py.class
 
 # Virtual environments
+.venv/
 venv/
 ENV/
 .env
+.env.*
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
 
 # Django
 *.log
@@ -42,7 +49,12 @@ logs/
 # Other
 coverage/
 htmlcov/
-.env*
+.pytest_cache/
+.mypy_cache/
+.tox/
+.cache/
+.eggs/
+.python-version
 
 # Node
 node_modules/
