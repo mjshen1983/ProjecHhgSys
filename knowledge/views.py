@@ -241,7 +241,7 @@ def _maybe_generate_preview(attachment, timeout=60):
     logger.info('Running soffice for %s, cmd=%s', fpath, cmd)
     start = time.time()
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, timeout=timeout)
         duration = time.time() - start
         logger.info('soffice exit=%s duration=%.1fs stdout=%s stderr=%s', proc.returncode, duration, proc.stdout[:1000], proc.stderr[:1000])
         if proc.returncode != 0:
