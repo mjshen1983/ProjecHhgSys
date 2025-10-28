@@ -12,9 +12,12 @@
 </div>
 
 <div class="table-card">
-    <form method="get" class="list-search" style="display:flex;gap:8px;align-items:center;">
-        <input type="text" name="q" placeholder="搜索标题或正文或标签" value="{{ request.GET.q }}" class="search-input" />
-        <button type="submit" class="header__button header__button--primary">搜索</button>
+    <form method="get" class="list-search">
+        <div class="form-field" style="flex-direction:row;align-items:center;gap:8px;margin:0;padding:12px 0;">
+            <h5 style="margin:0 8px 0 0;font-weight:600;">搜索</h5>
+            <input type="text" name="q" placeholder="搜索标题或正文或标签" value="{{ request.GET.q }}" />
+            <button type="submit" class="header__button header__button--primary">搜索</button>
+        </div>
     </form>
     <table>
         <thead>
